@@ -38,13 +38,29 @@ Mappings:
       InstanceType: t2.small
 
 Resources:
+  myEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref WebServerInstance
   WebServerInstance:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Ref AmiID
-      InstanceType: !FindInMap [EnvironmentToInstanceType, !Ref EnvironmentType, InstanceType]
+      InstanceType:
+        !FindInMap [
+          EnvironmentToInstanceType,
+          !Ref EnvironmentType,
+          InstanceType,
+        ]
       Tags:
         - Key: Name
-          Value: !Join [ '-', [ !Ref EnvironmentType, webserver ] ]
+          Value: !Join ["-", [!Ref EnvironmentType, webserver]]
 
 # Add your code here!
+Outputs:
+  EC2PublicDNS:
+    Description: "Public DNS of EC2 instance"
+    Value: !GetAtt WebServerInstance.PublicDnsName
+  ElasticIP:
+    Description: "Elastic IP Attached to the EC2 Instance"
+    Value: !GetAtt myEIP.PublicIp
