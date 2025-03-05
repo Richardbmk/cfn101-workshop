@@ -1,0 +1,8 @@
+# Create this file at ~/.taskcat.yaml with that name
+# more info at official docs: https://aws-ia.github.io/taskcat/
+general:
+  auth:
+    default: your_profile_name_here # AWS Profile you would like to use
+  s3_bucket: tcat-linting-and-testing-workshop-XXXXX # Name of an existing aws bucket
+  parameters:
+    VpcIpv4Cidr: 172.16.0.0/16

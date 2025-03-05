@@ -3,8 +3,8 @@ project:
   package_lambda: false
   # Update this section with regions you wish to use
   regions:
-  - us-east-1
-  - us-east-2
+    - eu-west-1
 tests:
   default:
-    template: ./vpc-and-security-group.yaml
+    # template: ./vpc-and-security-group.yaml
+    template: ./sqs-queue.yaml
