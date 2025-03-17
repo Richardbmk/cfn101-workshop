@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: AWS CloudFormation workshop - Dynamic references - Lambda function (uksb-1q9p31idr) (tag:dynamic-references).
+Description: AWS CloudFormation workshop - Dynamic references - Lambda memory size (uksb-1q9p31idr) (tag:dynamic-references).
 
 Resources:
   FunctionExecutionRole:
@@ -18,22 +18,21 @@ Resources:
       ManagedPolicyArns:
         - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
       Path: /
-
-  DatabaseFunction:
+  ## Lambda Resource Goes Here
+  BetterFunction:
     Type: AWS::Lambda::Function
     Properties:
       Role: !GetAtt FunctionExecutionRole.Arn
       Handler: index.handler
-      ## Environment Configuration Goes Here
       Runtime: python3.9
+      MemorySize: "{{resolve:ssm:/lambdas-configurations/memorySize}}"
       Code:
         ZipFile: |
+          # Version: 1.0.1
           import os
           def handler(event, context):
-              RDS_HOSTNAME=os.getenv('RDS_HOSTNAME')
-              RDS_PORT=os.getenv('RDS_PORT')
-              return "Database: {}:{}".format(RDS_HOSTNAME,RDS_PORT)
+              LAMBDA_MEMORY_SIZE = os.getenv("LAMBDA_MEMORY_SIZE")
+              return "lambda Memory Size: {}".format(LAMBDA_MEMORY_SIZE)
       Environment:
         Variables:
-          RDS_HOSTNAME: "{{resolve:secretsmanager:DatabaseConnParams:SecretString:RDS_HOSTNAME}}"
-          RDS_PORT: "{{resolve:secretsmanager:DatabaseConnParams:SecretString:RDS_PORT}}"
+          LAMBDA_MEMORY_SIZE: "{{resolve:ssm:/lambdas-configurations/memorySize}}"
