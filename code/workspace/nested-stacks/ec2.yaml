@@ -6,33 +6,43 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: 'Amazon EC2 Configuration'
+          default: "Amazon EC2 Configuration"
         Parameters:
           - AmiID
 
     ParameterLabels:
       AmiID:
-        default: 'Amazon Machine Image ID'
+        default: "Amazon Machine Image ID"
 
 Parameters:
   EnvironmentType:
-    Description: 'Specify the Environment type of the stack.'
+    Description: "Specify the Environment type of the stack."
     Type: String
     Default: Test
     AllowedValues:
       - Dev
       - Test
       - Prod
-    ConstraintDescription: 'Specify either Dev, Test or Prod.'
+    ConstraintDescription: "Specify either Dev, Test or Prod."
 
   AmiID:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Description: 'The ID of the AMI.'
+    Description: "The ID of the AMI."
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
   # 1. Add VpcId and SubnetId parameter from "1. Prepare the security group resource" here
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: "The VPC ID"
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: "The Subnet ID"
 
   # 3. Add WebServerInstanceProfile parameter from "5. Prepare the EC2 template" here
+  WebServerInstanceProfile:
+    Type: String
+    Description: "Instance profile resource ID"
 
 Mappings:
   EnvironmentToInstanceType:
@@ -116,15 +126,19 @@ Resources:
       SubnetId: !Ref SubnetId
       IamInstanceProfile: !Ref WebServerInstanceProfile
       ImageId: !Ref AmiID
-      InstanceType: !FindInMap [EnvironmentToInstanceType, !Ref EnvironmentType, InstanceType]
+      InstanceType:
+        !FindInMap [
+          EnvironmentToInstanceType,
+          !Ref EnvironmentType,
+          InstanceType,
+        ]
       SecurityGroupIds:
         - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: !Join [ ' ', [ !Ref EnvironmentType, Web Server ] ]
+          Value: !Join [" ", [!Ref EnvironmentType, Web Server]]
       UserData:
-        Fn::Base64:
-          !Sub |
+        Fn::Base64: !Sub |
           #!/bin/bash -xe
           # Update aws-cfn-bootstrap to the latest
           yum install -y aws-cfn-bootstrap
@@ -157,6 +171,7 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
       # 2. Add 'VpcId' property from "1. Prepare the security group resource" here
+      VpcId: !Ref VpcId
 
   WebServerEIP:
     Type: AWS::EC2::EIP
@@ -166,7 +181,7 @@ Resources:
 
 Outputs:
   WebServerPublicDNS:
-    Description: 'Public DNS of EC2 instance'
+    Description: "Public DNS of EC2 instance"
     Value: !GetAtt WebServerInstance.PublicDnsName
 
   WebServerElasticIP:
