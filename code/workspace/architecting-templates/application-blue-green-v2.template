@@ -62,9 +62,7 @@ Parameters:
   PageTextContent:
     Description: The sample text to show in the HTML page.
     Type: String
-    AllowedValues:
-      - Hello world!
-    Default: Hello world!
+    Default: "Hello Green environment!"
 
   SecurityGroupStackName:
     Description: The name of the CloudFormation stack you created for security group resources.
@@ -80,6 +78,18 @@ Parameters:
     Description: The DNS record name to create (include the full domain name)
     Type: String
     Default: cloudformation-lab.ricardoboriba.net
+  DeploymentColor:
+    Description: Deployment color (Blue or Green)
+    Type: String
+    AllowedValues:
+      - Green
+    Default: Green
+  RecordWeight:
+    Description: Weight for the Route53 record (higher gets more traffic)
+    Type: Number
+    Default: 255
+    MinValue: 0
+    MaxValue: 255
 
 Resources:
   AutoScalingGroup:
@@ -239,6 +249,8 @@ Resources:
       HostedZoneId: !Ref HostedZoneId
       Name: !Ref RecordName
       Type: A
+      Weight: !Ref RecordWeight
+      SetIdentifier: !Ref DeploymentColor
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -266,6 +278,10 @@ Resources:
 Outputs:
   AppUrl:
     Description: URL of the sample app.
-    Value: !Sub 'http://${LoadBalancer.DNSName}'
+    Value: !Sub 'http://${LoadBalancer.DNSName} (${DeploymentColor} Environment)'
     Export:
       Name: !Sub '${AWS::StackName}-AppUrl'
+  
+  DeploymentInfo:
+    Description: Deployment information
+    Value: !Sub '${DeploymentColor} environment with weight ${RecordWeight}'
