@@ -1,0 +1,12 @@
+# This file contains example Guard rules you write
+let my_buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+
+
+%my_buckets.Properties {
+    BucketEncryption.ServerSideEncryptionConfiguration[*] {
+        ServerSideEncryptionByDefault.SSEAlgorithm == 'AES256'
+        <<BucketEncryption not configured with the AES256 algorithm>>
+    }
+    VersioningConfiguration.Status == 'Enabled'
+    <<BucketEncryption not configured with versioning enabled>>
+}

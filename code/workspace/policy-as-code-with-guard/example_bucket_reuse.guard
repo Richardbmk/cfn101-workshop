@@ -1,0 +1,24 @@
+let my_buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+
+
+rule validate_bucket_sse_example when %my_buckets !empty {
+    %my_buckets.Properties {
+        BucketEncryption.ServerSideEncryptionConfiguration[*] {
+            ServerSideEncryptionByDefault.SSEAlgorithm == 'AES256'
+            <<BucketEncryption not configured with the AES256 algorithm>>
+        }
+    }
+}
+
+
+rule validate_bucket_versioning_example when %my_buckets !empty {
+    %my_buckets.Properties {
+        VersioningConfiguration.Status == 'Enabled'
+        <<BucketEncryption not configured versioning enabled>>
+    }
+}
+
+rule correlation_example when %my_buckets !empty {
+    validate_bucket_sse_example
+    validate_bucket_versioning_example
+}
