@@ -1,1 +1,11 @@
 # This file contains example Guard rules you write
+AWS::S3::Bucket {
+    Properties {
+        BucketEncryption.ServerSideEncryptionConfiguration[*] {
+            ServerSideEncryptionByDefault.SSEAlgorithm == 'AES256'
+            <<BucketEncryption not configured with the AES256 algorithm>>
+        }
+        VersioningConfiguration.Status == 'Enabled'
+        <<BucketEncryption not configured with versioning enabled>>
+    }
+}
