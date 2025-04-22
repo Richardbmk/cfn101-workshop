@@ -9,6 +9,7 @@ This repository provides all the resources referenced in the [CloudFormation](ht
 well as the code used to build it.
 
 ## Usage
+
 1. Clone the repository to your working directory or Download the ZIP file from GitHub.
 2. Open the downloaded files in your code editor or IDE of your choice.
 
@@ -18,12 +19,19 @@ In the [code/solutions](code/solutions), you can find the completed solution for
 reference, in case you get stuck or things don't work as intended.
 
 ## Local development
+
 To set-up a local development environment for changing the workshop, please follow the instructions in
 [local development](docs/LOCAL_DEVELOPMENT.md) file.
 
 ## Contributing
+
 Contributions are more than welcome. Please read the [code of conduct](CODE_OF_CONDUCT.md) and the
 [contributing guidelines](CONTRIBUTING.md).
 
 ## License
+
 This library is licensed under the MIT-0 License. See the [license](LICENSE) file.
+
+# LINK to the Workshop here:
+
+https://catalog.workshops.aws/cfn101/en-US
